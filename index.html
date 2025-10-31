@@ -185,16 +185,6 @@
             margin-bottom: 16px;
         }
         
-        .discount-percent {
-            background-color: #f59e0b;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        
         .map-button {
             background-color: var(--accent-color);
             color: white;
@@ -266,13 +256,13 @@
             border-radius: 12px;
             padding: 20px;
             margin: 20px auto;
-            max-width: 200px;
+            max-width: 280px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .qr-code-placeholder {
-            width: 160px;
-            height: 160px;
+            width: 240px;
+            height: 240px;
             background: 
                 linear-gradient(90deg, #f0f0f0 25%, transparent 25%),
                 linear-gradient(180deg, #f0f0f0 25%, transparent 25%),
@@ -294,17 +284,17 @@
         }
         
         .qr-code-placeholder::before {
-            width: 40px;
-            height: 40px;
-            top: 10px;
-            left: 10px;
+            width: 60px;
+            height: 60px;
+            top: 15px;
+            left: 15px;
         }
         
         .qr-code-placeholder::after {
-            width: 20px;
-            height: 20px;
-            bottom: 10px;
-            right: 10px;
+            width: 30px;
+            height: 30px;
+            bottom: 15px;
+            right: 15px;
         }
         
         .theme-dark .qr-code {
@@ -413,6 +403,15 @@
             .map-container {
                 height: 200px;
             }
+            
+            .qr-code {
+                max-width: 240px;
+            }
+            
+            .qr-code-placeholder {
+                width: 200px;
+                height: 200px;
+            }
         }
     </style>
 </head>
@@ -448,10 +447,7 @@
                 <!-- Элемент скидки 1 -->
                 <div class="feed-item" data-location="cafe">
                     <div class="feed-content">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <h3 class="feed-title">Скидка в кафе "Молодежное"</h3>
-                            <div class="discount-percent">-15%</div>
-                        </div>
+                        <h3 class="feed-title">Скидка в кафе "Молодежное"</h3>
                         <p class="feed-description">На весь ассортимент выпечки и напитков. Действует для держателей карты Дома молодежи.</p>
                         <button class="map-button" data-location="cafe">
                             <i data-feather="map-pin"></i>
@@ -463,10 +459,7 @@
                 <!-- Элемент скидки 2 -->
                 <div class="feed-item" data-location="cinema">
                     <div class="feed-content">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <h3 class="feed-title">Билеты в кинотеатр "Юность"</h3>
-                            <div class="discount-percent">-20%</div>
-                        </div>
+                        <h3 class="feed-title">Билеты в кинотеатр "Юность"</h3>
                         <p class="feed-description">На все сеансы в кинотеатре "Юность". Предъявите карту Дома молодежи при покупке билета.</p>
                         <button class="map-button" data-location="cinema">
                             <i data-feather="map-pin"></i>
@@ -478,10 +471,7 @@
                 <!-- Элемент скидки 3 -->
                 <div class="feed-item" data-location="pool">
                     <div class="feed-content">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <h3 class="feed-title">Абонемент в бассейн</h3>
-                            <div class="discount-percent">-25%</div>
-                        </div>
+                        <h3 class="feed-title">Абонемент в бассейн</h3>
                         <p class="feed-description">На месячный абонемент без ограничений. Только для активных участников Дома молодежи.</p>
                         <button class="map-button" data-location="pool">
                             <i data-feather="map-pin"></i>
@@ -493,10 +483,7 @@
                 <!-- Элемент скидки 4 -->
                 <div class="feed-item" data-location="gym">
                     <div class="feed-content">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <h3 class="feed-title">Приведи друга</h3>
-                            <div class="discount-percent">+2</div>
-                        </div>
+                        <h3 class="feed-title">Приведи друга</h3>
                         <p class="feed-description">Получи 2 дополнительных посещения спортзала за каждого приведенного друга.</p>
                         <button class="map-button" data-location="gym">
                             <i data-feather="map-pin"></i>
@@ -515,7 +502,6 @@
                 
                 <div class="qr-code">
                     <div class="qr-code-placeholder"></div>
-                    <p style="margin-top: 16px; font-size: 14px; color: var(--secondary-text);">QR-код для получения скидок</p>
                 </div>
             </div>
         </div>
