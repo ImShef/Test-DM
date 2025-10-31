@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дом молодежи</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=8c6093db-f9ac-4842-9028-e93c4bae3e85&lang=ru_RU" type="text/javascript"></script>
     <style>
         * {
             margin: 0;
@@ -147,12 +147,9 @@
             overflow: hidden;
             box-shadow: var(--shadow);
             background-color: var(--accent-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
-        #map {
+        #yandex-map {
             height: 100%;
             width: 100%;
         }
@@ -379,15 +376,28 @@
             color: var(--accent-color);
         }
         
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--secondary-text);
+        }
+        
+        .loading i {
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 480px) {
             .map-container {
                 height: 300px;
             }
-        }
-        
-        /* Стили для карты */
-        .leaflet-container {
-            background: var(--accent-light) !important;
         }
     </style>
 </head>
@@ -410,11 +420,7 @@
         
         <div id="map-tab" class="tab-content active">
             <div class="map-container">
-                <div class="map-placeholder" id="mapPlaceholder">
-                    <i class="fas fa-map-marked-alt"></i>
-                    <p>Загрузка карты...</p>
-                </div>
-                <div id="map"></div>
+                <div id="yandex-map"></div>
             </div>
             
             <div class="section-title">Партнерские заведения</div>
@@ -429,84 +435,10 @@
         <div id="discounts" class="tab-content">
             <div class="section-title">Доступные скидки</div>
             
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Скидка в кафе "Молодежное"</div>
-                        <div class="discount-description">На весь ассортимент выпечки и напитков</div>
-                    </div>
-                    <div class="discount-percent">-15%</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 30.11.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="far fa-user"></i>
-                        <span>2/5 использовано</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Билеты в кинотеатр</div>
-                        <div class="discount-description">На все сеансы в кинотеатре "Юность"</div>
-                    </div>
-                    <div class="discount-percent">-20%</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 15.12.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="far fa-user"></i>
-                        <span>1/3 использовано</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Абонемент в бассейн</div>
-                        <div class="discount-description">На месячный абонемент без ограничений</div>
-                    </div>
-                    <div class="discount-percent">-25%</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 10.12.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="far fa-user"></i>
-                        <span>0/1 использовано</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Приведи друга</div>
-                        <div class="discount-description">Получи 2 дополнительных посещения спортзала</div>
-                    </div>
-                    <div class="discount-percent">+2</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 31.12.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="fas fa-users"></i>
-                        <span>Активно</span>
-                    </div>
-                </div>
+            <div class="empty-state">
+                <i class="fas fa-tags"></i>
+                <h3>Скидки скоро появятся</h3>
+                <p>Мы активно работаем над специальными предложениями для вас</p>
             </div>
         </div>
         
@@ -558,7 +490,6 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // Переключение между вкладками
         document.querySelectorAll('.footer-item').forEach(element => {
@@ -643,104 +574,98 @@
                 themeIcon.classList.add('fa-moon');
                 localStorage.setItem('theme', 'light');
             }
-            
-            // Обновляем стили карты при смене темы
-            updateMapTheme();
         });
         
-        // Инициализация карты
-        let map;
-        function initMap() {
-            // Скрываем плейсхолдер
-            document.getElementById('mapPlaceholder').style.display = 'none';
-            
-            // Создаем карту
-            map = L.map('map').setView([55.7558, 37.6173], 13); // Москва по умолчанию
-            
-            // Добавляем слой карты в зависимости от темы
-            updateMapTheme();
-            
-            // Добавляем маркеры заведений
-            addSampleLocations();
-        }
-        
-        // Обновление темы карты
-        function updateMapTheme() {
-            if (!map) return;
-            
-            // Удаляем текущий слой
-            map.eachLayer(layer => {
-                if (layer instanceof L.TileLayer) {
-                    map.removeLayer(layer);
-                }
-            });
-            
-            // Добавляем соответствующий теме слой
-            if (document.body.classList.contains('theme-dark')) {
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(map);
-            } else {
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(map);
+        // Инициализация Яндекс Карт
+        function initYandexMap() {
+            // Проверяем, загружена ли библиотека Яндекс Карт
+            if (typeof ymaps === 'undefined') {
+                console.error('Библиотека Яндекс Карт не загружена');
+                return;
             }
-        }
-        
-        // Добавление примеров заведений на карту
-        function addSampleLocations() {
-            // Примеры заведений (соответствуют скидкам)
-            const locations = [
-                {
-                    name: "Кафе 'Молодежное'",
-                    lat: 55.7558,
-                    lng: 37.6173,
-                    discount: "Скидка 15%"
-                },
-                {
-                    name: "Кинотеатр 'Юность'",
-                    lat: 55.7517,
-                    lng: 37.6178,
-                    discount: "Скидка 20%"
-                },
-                {
-                    name: "Бассейн 'Волна'",
-                    lat: 55.7598,
-                    lng: 37.6193,
-                    discount: "Скидка 25%"
-                },
-                {
-                    name: "Спортзал 'Энергия'",
-                    lat: 55.7528,
-                    lng: 37.6223,
-                    discount: "2 бесплатных занятия"
+            
+            // Инициализируем карту
+            ymaps.ready(function () {
+                try {
+                    const myMap = new ymaps.Map("yandex-map", {
+                        center: [55.76, 37.64], // Москва
+                        zoom: 10,
+                        controls: ['zoomControl', 'typeSelector', 'fullscreenControl']
+                    });
+                    
+                    // Добавляем метки заведений
+                    const locations = [
+                        {
+                            coords: [55.76, 37.64],
+                            name: "Главный корпус Дома молодежи",
+                            description: "Основное здание"
+                        },
+                        {
+                            coords: [55.74, 37.60],
+                            name: "Кафе для участников",
+                            description: "Скидка 15% для держателей карты"
+                        },
+                        {
+                            coords: [55.78, 37.65],
+                            name: "Спортивный комплекс",
+                            description: "Скидка 20% на абонементы"
+                        }
+                    ];
+                    
+                    // Создаем кастомную иконку для меток
+                    const customIcon = new ymaps.Placemark(
+                        [0, 0],
+                        {},
+                        {
+                            iconLayout: 'default#image',
+                            iconImageHref: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%238b5cf6" stroke="white" stroke-width="2"/><text x="16" y="21" text-anchor="middle" fill="white" font-family="Arial" font-size="14">📍</text></svg>',
+                            iconImageSize: [32, 32],
+                            iconImageOffset: [-16, -32]
+                        }
+                    );
+                    
+                    // Добавляем метки на карту
+                    locations.forEach(location => {
+                        const placemark = new ymaps.Placemark(
+                            location.coords,
+                            {
+                                balloonContent: `
+                                    <div style="padding: 10px;">
+                                        <h3 style="margin: 0 0 5px; color: #8b5cf6;">${location.name}</h3>
+                                        <p style="margin: 0; color: #666;">${location.description}</p>
+                                    </div>
+                                `
+                            },
+                            {
+                                preset: 'islands#violetIcon'
+                            }
+                        );
+                        
+                        myMap.geoObjects.add(placemark);
+                    });
+                    
+                    // Оптимизируем отображение меток
+                    myMap.setBounds(myMap.geoObjects.getBounds(), {
+                        checkZoomRange: true
+                    });
+                    
+                } catch (error) {
+                    console.error('Ошибка при инициализации карты:', error);
+                    document.getElementById('yandex-map').innerHTML = `
+                        <div class="map-placeholder">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Не удалось загрузить карту</p>
+                            <p style="font-size: 14px;">Проверьте подключение к интернету</p>
+                        </div>
+                    `;
                 }
-            ];
-            
-            // Создаем кастомную иконку для маркера
-            const customIcon = L.divIcon({
-                html: '<i class="fas fa-map-marker-alt" style="color: #8b5cf6; font-size: 24px;"></i>',
-                iconSize: [24, 24],
-                iconAnchor: [12, 24],
-                className: 'custom-marker'
-            });
-            
-            // Добавляем маркеры на карту
-            locations.forEach(location => {
-                const marker = L.marker([location.lat, location.lng], {icon: customIcon}).addTo(map);
-                marker.bindPopup(`
-                    <div style="padding: 10px;">
-                        <b>${location.name}</b><br>
-                        <span style="color: #8b5cf6; font-weight: bold;">${location.discount}</span>
-                    </div>
-                `);
             });
         }
         
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            // Инициализируем карту
-            initMap();
+            // Инициализируем Яндекс Карты
+            initYandexMap();
             
             // Следим за изменением системной темы
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
@@ -754,7 +679,6 @@
                         themeIcon.classList.remove('fa-sun');
                         themeIcon.classList.add('fa-moon');
                     }
-                    updateMapTheme();
                 }
             });
         });
