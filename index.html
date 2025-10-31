@@ -427,7 +427,7 @@
                     <button class="theme-toggle" id="themeToggle">
                         <i data-feather="moon"></i>
                     </button>
-                    <div class="user-avatar" id="userAvatar">ИИ</div>
+                    <div class="user-avatar" id="userAvatar">ВП</div>
                 </div>
             </div>
         </div>
@@ -445,47 +445,11 @@
                 </div>
                 
                 <!-- Элемент скидки 1 -->
-                <div class="feed-item" data-location="cafe">
+                <div class="feed-item" data-location="youth-house">
                     <div class="feed-content">
-                        <h3 class="feed-title">Скидка в кафе "Молодежное"</h3>
-                        <p class="feed-description">На весь ассортимент выпечки и напитков. Действует для держателей карты Дома молодежи.</p>
-                        <button class="map-button" data-location="cafe">
-                            <i data-feather="map-pin"></i>
-                            На карте
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Элемент скидки 2 -->
-                <div class="feed-item" data-location="cinema">
-                    <div class="feed-content">
-                        <h3 class="feed-title">Билеты в кинотеатр "Юность"</h3>
-                        <p class="feed-description">На все сеансы в кинотеатре "Юность". Предъявите карту Дома молодежи при покупке билета.</p>
-                        <button class="map-button" data-location="cinema">
-                            <i data-feather="map-pin"></i>
-                            На карте
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Элемент скидки 3 -->
-                <div class="feed-item" data-location="pool">
-                    <div class="feed-content">
-                        <h3 class="feed-title">Абонемент в бассейн</h3>
-                        <p class="feed-description">На месячный абонемент без ограничений. Только для активных участников Дома молодежи.</p>
-                        <button class="map-button" data-location="pool">
-                            <i data-feather="map-pin"></i>
-                            На карте
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Элемент скидки 4 -->
-                <div class="feed-item" data-location="gym">
-                    <div class="feed-content">
-                        <h3 class="feed-title">Приведи друга</h3>
-                        <p class="feed-description">Получи 2 дополнительных посещения спортзала за каждого приведенного друга.</p>
-                        <button class="map-button" data-location="gym">
+                        <h3 class="feed-title">Дом Молодежи</h3>
+                        <p class="feed-description">Приводите своих друзей сюда!</p>
+                        <button class="map-button" data-location="youth-house">
                             <i data-feather="map-pin"></i>
                             На карте
                         </button>
@@ -496,8 +460,8 @@
         
         <div id="profile" class="tab-content">
             <div class="profile-card">
-                <div class="profile-avatar" id="profileAvatar">ИИ</div>
-                <div class="profile-name">Иван Иванов</div>
+                <div class="profile-avatar" id="profileAvatar">ВП</div>
+                <div class="profile-name">Вася Пупкин</div>
                 <div class="profile-status">Активный участник</div>
                 
                 <div class="qr-code">
@@ -559,7 +523,7 @@
         }
         
         // Устанавливаем имя пользователя и инициалы
-        const userName = "Иван Иванов";
+        const userName = "Вася Пупкин";
         const userInitials = getInitials(userName);
         
         document.getElementById('userAvatar').textContent = userInitials;
@@ -615,36 +579,18 @@
             ymaps.ready(function () {
                 try {
                     myMap = new ymaps.Map("yandex-map", {
-                        center: [55.76, 37.64], // Москва
-                        zoom: 10,
+                        center: [60.710474, 28.749282], // Выборг
+                        zoom: 14,
                         controls: ['zoomControl', 'typeSelector', 'fullscreenControl']
                     });
                     
                     // Добавляем метки заведений
                     const locations = [
                         {
-                            id: 'cafe',
-                            coords: [55.74, 37.60],
-                            name: "Кафе 'Молодежное'",
-                            description: "Скидка 15% для держателей карты"
-                        },
-                        {
-                            id: 'cinema',
-                            coords: [55.75, 37.62],
-                            name: "Кинотеатр 'Юность'",
-                            description: "Скидка 20% на все сеансы"
-                        },
-                        {
-                            id: 'pool',
-                            coords: [55.78, 37.65],
-                            name: "Бассейн 'Волна'",
-                            description: "Скидка 25% на абонементы"
-                        },
-                        {
-                            id: 'gym',
-                            coords: [55.77, 37.63],
-                            name: "Спортзал 'Энергия'",
-                            description: "2 бесплатных занятия за друга"
+                            id: 'youth-house',
+                            coords: [60.711503, 28.748026],
+                            name: "Дом Молодежи",
+                            description: "Приводите своих друзей сюда!"
                         }
                     ];
                     
@@ -667,11 +613,6 @@
                         
                         myMap.geoObjects.add(placemark);
                         placemarks[location.id] = placemark;
-                    });
-                    
-                    // Оптимизируем отображение меток
-                    myMap.setBounds(myMap.geoObjects.getBounds(), {
-                        checkZoomRange: true
                     });
                     
                 } catch (error) {
