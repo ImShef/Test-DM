@@ -3,48 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дом молодежи - Моя карта</title>
+    <title>Дом молодежи</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://api-maps.yandex.ru/v3/?apikey=YOUR_API_KEY&lang=ru_RU" type="text/javascript"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         
         :root {
-            --primary: #4a76a8;
-            --primary-light: #5b8bc5;
-            --secondary: #ff6b6b;
-            --accent: #ffd166;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --gray: #6c757d;
-            --success: #06d6a0;
-            --border-radius: 12px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --bg-color: #fafafa;
+            --secondary-bg: #f0f0f0;
+            --text-color: #2d2d2d;
+            --secondary-text: #6c6c6c;
+            --accent-color: #8b5cf6;
+            --accent-light: #ede9fe;
+            --accent-dark: #7c3aed;
+            --border-color: #e5e5e5;
+            --card-bg: #ffffff;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --hover-color: #f5f3ff;
+        }
+        
+        .theme-dark {
+            --bg-color: #121212;
+            --secondary-bg: #1e1e1e;
+            --text-color: #e5e5e5;
+            --secondary-text: #a3a3a3;
+            --accent-color: #a78bfa;
+            --accent-light: #2e1065;
+            --accent-dark: #8b5cf6;
+            --border-color: #333333;
+            --card-bg: #1a1a1a;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --hover-color: #2e1065;
         }
         
         body {
-            background-color: #f5f7fa;
-            color: var(--dark);
-            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
             padding-bottom: 80px;
+            transition: background-color 0.3s, color 0.3s;
         }
         
         .container {
             max-width: 100%;
-            padding: 0 15px;
+            padding: 0 16px;
         }
         
         .header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            padding: 20px 15px;
-            border-radius: 0 0 20px 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            background-color: var(--bg-color);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .header-content {
@@ -57,148 +74,106 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        
-        .logo-icon {
-            font-size: 24px;
-        }
-        
-        .logo-text {
             font-weight: 700;
+            font-size: 20px;
+            color: var(--accent-color);
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
             font-size: 18px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--hover-color);
         }
         
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: white;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
-            font-weight: bold;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
         }
         
         .tab-navigation {
             display: flex;
-            background-color: white;
-            border-radius: var(--border-radius);
-            margin: 0 15px 20px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            margin: 20px 16px;
+            padding: 4px;
             box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
         
         .tab {
             flex: 1;
             text-align: center;
-            padding: 15px 0;
+            padding: 12px 0;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            color: var(--gray);
+            border-radius: 12px;
+            color: var(--secondary-text);
         }
         
         .tab.active {
-            border-bottom-color: var(--primary);
-            color: var(--primary);
+            background-color: var(--accent-color);
+            color: white;
         }
         
         .tab-content {
             display: none;
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.4s ease;
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .tab-content.active {
             display: block;
         }
         
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 20px 15px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .section-title i {
-            color: var(--primary);
-        }
-        
-        .discount-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 15px;
-            margin: 0 15px 15px;
+        .map-container {
+            height: 400px;
+            margin: 0 16px 20px;
+            border-radius: 16px;
+            overflow: hidden;
             box-shadow: var(--shadow);
-            transition: transform 0.3s;
         }
         
-        .discount-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .discount-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-        }
-        
-        .discount-title {
-            font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-        
-        .discount-percent {
-            background-color: var(--secondary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-            white-space: nowrap;
-            margin-left: 10px;
-        }
-        
-        .discount-description {
-            color: var(--gray);
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        
-        .discount-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: var(--gray);
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-        
-        .discount-date {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        #map {
+            height: 100%;
+            width: 100%;
         }
         
         .profile-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin: 0 15px 20px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 0 16px 20px;
             box-shadow: var(--shadow);
             text-align: center;
         }
@@ -207,60 +182,39 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            margin: 0 auto 15px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+            margin: 0 auto 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 32px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 600;
         }
         
         .profile-name {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
         
         .profile-status {
             display: inline-block;
-            background-color: var(--accent);
-            color: var(--dark);
-            padding: 5px 15px;
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            padding: 6px 16px;
             border-radius: 20px;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 15px;
-        }
-        
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: var(--gray);
+            margin-bottom: 20px;
         }
         
         .action-button {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
+            padding: 14px 20px;
+            border-radius: 16px;
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
@@ -270,80 +224,46 @@
         }
         
         .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background-color: var(--accent-dark);
         }
         
         .menu-item {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 15px;
-            margin: 0 15px 10px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin: 0 16px 12px;
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .menu-item:hover {
-            transform: translateX(5px);
+            background-color: var(--hover-color);
         }
         
         .menu-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background-color: var(--accent-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
+            color: var(--accent-color);
             font-size: 18px;
         }
         
         .menu-text {
             flex: 1;
             font-weight: 600;
+            font-size: 16px;
         }
         
         .menu-arrow {
-            color: var(--gray);
-        }
-        
-        .badge-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 0 15px;
-        }
-        
-        .badge {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 15px;
-            flex: 1;
-            min-width: calc(50% - 10px);
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-        
-        .badge-icon {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-        
-        .badge-title {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        
-        .badge-desc {
-            font-size: 12px;
-            color: var(--gray);
+            color: var(--secondary-text);
         }
         
         .footer {
@@ -351,24 +271,29 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: white;
-            padding: 15px;
+            background-color: var(--card-bg);
+            padding: 16px;
             display: flex;
             justify-content: space-around;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+            border-top: 1px solid var(--border-color);
         }
         
         .footer-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
-            color: var(--gray);
+            gap: 6px;
+            color: var(--secondary-text);
             cursor: pointer;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            border-radius: 12px;
         }
         
         .footer-item.active {
-            color: var(--primary);
+            color: var(--accent-color);
+            background-color: var(--accent-light);
         }
         
         .footer-icon {
@@ -377,11 +302,24 @@
         
         .footer-text {
             font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--secondary-text);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--accent-color);
         }
         
         @media (max-width: 480px) {
-            .badge {
-                min-width: 100%;
+            .map-container {
+                height: 300px;
             }
         }
     </style>
@@ -391,107 +329,32 @@
         <div class="header">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon"><i class="fas fa-home"></i></div>
-                    <div class="logo-text">Дом молодежи</div>
+                    <i class="fas fa-home"></i>
+                    <span>Дом молодежи</span>
                 </div>
-                <div class="user-avatar" id="userAvatar">ИИ</div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-avatar" id="userAvatar">ИИ</div>
+                </div>
             </div>
         </div>
         
         <div class="tab-navigation">
-            <div class="tab active" data-tab="discounts">Скидки</div>
+            <div class="tab active" data-tab="map">Карта</div>
             <div class="tab" data-tab="profile">Профиль</div>
         </div>
         
-        <div id="discounts" class="tab-content active">
-            <div class="section-title">
-                <i class="fas fa-percentage"></i>
-                <span>Доступные скидки</span>
+        <div id="map" class="tab-content active">
+            <div class="map-container">
+                <div id="yandex-map"></div>
             </div>
             
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Скидка в кафе "Молодежное"</div>
-                        <div class="discount-description">На весь ассортимент выпечки и напитков</div>
-                    </div>
-                    <div class="discount-percent">-15%</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 30.11.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="far fa-user"></i>
-                        <span>Использовано: 2/5</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Билеты в кинотеатр</div>
-                        <div class="discount-description">На все сеансы в кинотеатре "Юность"</div>
-                    </div>
-                    <div class="discount-percent">-20%</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 15.12.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="far fa-user"></i>
-                        <span>Использовано: 1/3</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Абонемент в бассейн</div>
-                        <div class="discount-description">На месячный абонемент без ограничений</div>
-                    </div>
-                    <div class="discount-percent">-25%</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 10.12.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="far fa-user"></i>
-                        <span>Использовано: 0/1</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section-title">
-                <i class="fas fa-gift"></i>
-                <span>Специальные предложения</span>
-            </div>
-            
-            <div class="discount-card">
-                <div class="discount-header">
-                    <div>
-                        <div class="discount-title">Приведи друга</div>
-                        <div class="discount-description">Получи 2 дополнительных посещения спортзала</div>
-                    </div>
-                    <div class="discount-percent">+2</div>
-                </div>
-                <div class="discount-footer">
-                    <div class="discount-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span>до 31.12.2023</span>
-                    </div>
-                    <div class="discount-usage">
-                        <i class="fas fa-users"></i>
-                        <span>Активно</span>
-                    </div>
-                </div>
+            <div class="empty-state">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>Карта партнерских заведений</h3>
+                <p>На карте отмечены места, где можно воспользоваться преимуществами карты Дома молодежи</p>
             </div>
         </div>
         
@@ -501,27 +364,7 @@
                 <div class="profile-name">Иван Иванов</div>
                 <div class="profile-status">Активный участник</div>
                 
-                <div class="stats-container">
-                    <div class="stat">
-                        <div class="stat-value">12</div>
-                        <div class="stat-label">Скидок</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">156</div>
-                        <div class="stat-label">Баллов</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">8</div>
-                        <div class="stat-label">Наград</div>
-                    </div>
-                </div>
-                
                 <button class="action-button">Показать QR-код</button>
-            </div>
-            
-            <div class="section-title">
-                <i class="fas fa-cog"></i>
-                <span>Настройки профиля</span>
             </div>
             
             <div class="menu-item">
@@ -536,16 +379,6 @@
             
             <div class="menu-item">
                 <div class="menu-icon">
-                    <i class="fas fa-history"></i>
-                </div>
-                <div class="menu-text">История посещений</div>
-                <div class="menu-arrow">
-                    <i class="fas fa-chevron-right"></i>
-                </div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="menu-icon">
                     <i class="fas fa-qrcode"></i>
                 </div>
                 <div class="menu-text">Мой QR-код</div>
@@ -553,62 +386,15 @@
                     <i class="fas fa-chevron-right"></i>
                 </div>
             </div>
-            
-            <div class="section-title">
-                <i class="fas fa-award"></i>
-                <span>Мои достижения</span>
-            </div>
-            
-            <div class="badge-container">
-                <div class="badge">
-                    <div class="badge-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="badge-title">Новичок</div>
-                    <div class="badge-desc">Первое посещение</div>
-                </div>
-                
-                <div class="badge">
-                    <div class="badge-icon">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <div class="badge-title">Гурман</div>
-                    <div class="badge-desc">10 посещений кафе</div>
-                </div>
-                
-                <div class="badge">
-                    <div class="badge-icon">
-                        <i class="fas fa-dumbbell"></i>
-                    </div>
-                    <div class="badge-title">Атлет</div>
-                    <div class="badge-desc">20 тренировок</div>
-                </div>
-                
-                <div class="badge">
-                    <div class="badge-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="badge-title">Эрудит</div>
-                    <div class="badge-desc">Участие в 5 мероприятиях</div>
-                </div>
-            </div>
         </div>
     </div>
     
     <div class="footer">
-        <div class="footer-item active">
-            <div class="footer-icon"><i class="fas fa-home"></i></div>
-            <div class="footer-text">Главная</div>
+        <div class="footer-item active" data-tab="map">
+            <div class="footer-icon"><i class="fas fa-map"></i></div>
+            <div class="footer-text">Карта</div>
         </div>
-        <div class="footer-item">
-            <div class="footer-icon"><i class="fas fa-percentage"></i></div>
-            <div class="footer-text">Скидки</div>
-        </div>
-        <div class="footer-item">
-            <div class="footer-icon"><i class="fas fa-calendar-alt"></i></div>
-            <div class="footer-text">Мероприятия</div>
-        </div>
-        <div class="footer-item">
+        <div class="footer-item" data-tab="profile">
             <div class="footer-icon"><i class="fas fa-user"></i></div>
             <div class="footer-text">Профиль</div>
         </div>
@@ -616,58 +402,183 @@
 
     <script>
         // Переключение между вкладками
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Убираем активный класс у всех вкладок и контента
+        document.querySelectorAll('.tab, .footer-item').forEach(element => {
+            element.addEventListener('click', () => {
+                const tabId = element.getAttribute('data-tab');
+                
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.footer-item').forEach(f => f.classList.remove('active'));
                 
-                // Добавляем активный класс текущей вкладке и соответствующему контенту
-                tab.classList.add('active');
-                const tabId = tab.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
+                if (tabId) {
+                    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    document.querySelectorAll('.footer-item').forEach(item => {
+                        if (item.getAttribute('data-tab') === tabId) {
+                            item.classList.add('active');
+                        }
+                    });
+                }
             });
         });
         
-        // Генерация случайных инициалов для аватара
-        const names = ['АА', 'ББ', 'ВВ', 'ГГ', 'ДД', 'ЕЕ', 'ЖЖ', 'ЗЗ', 'ИИ', 'КК'];
-        const randomName = names[Math.floor(Math.random() * names.length)];
-        document.getElementById('userAvatar').textContent = randomName;
-        document.getElementById('profileAvatar').textContent = randomName;
+        // Функция для получения инициалов из имени пользователя
+        function getInitials(name) {
+            if (!name) return 'ИИ';
+            
+            const nameParts = name.trim().split(' ');
+            if (nameParts.length === 1) {
+                return nameParts[0].charAt(0).toUpperCase();
+            } else {
+                return (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase();
+            }
+        }
+        
+        // Устанавливаем имя пользователя и инициалы
+        const userName = "Иван Иванов";
+        const userInitials = getInitials(userName);
+        
+        document.getElementById('userAvatar').textContent = userInitials;
+        document.getElementById('profileAvatar').textContent = userInitials;
+        document.querySelector('.profile-name').textContent = userName;
         
         // Добавление интерактивности кнопкам
         document.querySelectorAll('.action-button').forEach(button => {
             button.addEventListener('click', function() {
-                alert('Функция в разработке');
+                alert('QR-код будет отображен здесь');
             });
         });
         
         // Добавление интерактивности пунктам меню
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', function() {
-                alert('Функция в разработке');
+                const text = this.querySelector('.menu-text').textContent;
+                alert(`Функция "${text}" в разработке`);
             });
         });
         
-        // Добавление интерактивности футеру
-        document.querySelectorAll('.footer-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.footer-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
+        // Автоматическое определение темы устройства
+        function detectSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            return 'light';
+        }
+        
+        // Переключение темы
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        const savedTheme = localStorage.getItem('theme') || detectSystemTheme();
+        if (savedTheme === 'dark') {
+            document.body.classList.add('theme-dark');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('theme-dark');
+            
+            if (document.body.classList.contains('theme-dark')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Инициализация Яндекс Карт
+        async function initYandexMap() {
+            // Ждем загрузки API
+            await ymaps3.ready;
+            
+            const {YMap, YMapDefaultSchemeLayer, YMapMarker} = ymaps3;
+            
+            // Создаем карту
+            const map = new YMap(
+                document.getElementById('yandex-map'),
+                {
+                    location: {
+                        center: [37.617494, 55.755826], // Москва
+                        zoom: 10
+                    }
+                }
+            );
+            
+            // Добавляем стандартный слой схемы
+            map.addChild(new YMapDefaultSchemeLayer());
+            
+            // Добавляем маркеры партнерских заведений (пример)
+            const locations = [
+                {
+                    coordinates: [37.617494, 55.755826],
+                    title: "Главный корпус Дома молодежи"
+                },
+                {
+                    coordinates: [37.639093, 55.768032],
+                    title: "Кафе для участников"
+                },
+                {
+                    coordinates: [37.591206, 55.733369],
+                    title: "Спортивный комплекс"
+                }
+            ];
+            
+            // Создаем маркеры для каждого местоположения
+            locations.forEach(location => {
+                const markerElement = document.createElement('div');
+                markerElement.innerHTML = `
+                    <div style="
+                        background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: bold;
+                        font-size: 14px;
+                        border: 2px solid white;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    ">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                `;
                 
-                // Здесь можно добавить логику перехода между разделами
-                if (this.querySelector('.footer-text').textContent === 'Профиль') {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    document.querySelector('[data-tab="profile"]').classList.add('active');
-                    document.getElementById('profile').classList.add('active');
-                } else if (this.querySelector('.footer-text').textContent === 'Скидки') {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    document.querySelector('[data-tab="discounts"]').classList.add('active');
-                    document.getElementById('discounts').classList.add('active');
+                const marker = new YMapMarker(
+                    {
+                        coordinates: location.coordinates,
+                        title: location.title
+                    },
+                    markerElement
+                );
+                
+                map.addChild(marker);
+            });
+        }
+        
+        // Инициализируем карту при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем Яндекс Карты
+            initYandexMap().catch(console.error);
+            
+            // Следим за изменением системной темы
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                if (!localStorage.getItem('theme')) {
+                    if (event.matches) {
+                        document.body.classList.add('theme-dark');
+                        themeIcon.classList.remove('fa-moon');
+                        themeIcon.classList.add('fa-sun');
+                    } else {
+                        document.body.classList.remove('theme-dark');
+                        themeIcon.classList.remove('fa-sun');
+                        themeIcon.classList.add('fa-moon');
+                    }
                 }
             });
         });
