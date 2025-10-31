@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дом молодежи</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://api-maps.yandex.ru/v3/?apikey=YOUR_API_KEY&lang=ru_RU" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -26,6 +26,7 @@
             --card-bg: #ffffff;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             --hover-color: #f5f3ff;
+            --discount-badge: #f59e0b;
         }
         
         .theme-dark {
@@ -40,6 +41,7 @@
             --card-bg: #1a1a1a;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
             --hover-color: #2e1065;
+            --discount-badge: #f59e0b;
         }
         
         body {
@@ -117,31 +119,6 @@
             cursor: pointer;
         }
         
-        .tab-navigation {
-            display: flex;
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            margin: 20px 16px;
-            padding: 4px;
-            box-shadow: var(--shadow);
-        }
-        
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px 0;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 12px;
-            color: var(--secondary-text);
-        }
-        
-        .tab.active {
-            background-color: var(--accent-color);
-            color: white;
-        }
-        
         .tab-content {
             display: none;
             animation: fadeIn 0.4s ease;
@@ -156,17 +133,90 @@
             display: block;
         }
         
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 24px 16px 16px;
+            color: var(--text-color);
+        }
+        
         .map-container {
             height: 400px;
             margin: 0 16px 20px;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: var(--shadow);
+            background-color: var(--accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         #map {
             height: 100%;
             width: 100%;
+        }
+        
+        .discount-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 16px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s;
+        }
+        
+        .discount-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .discount-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .discount-title {
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+        
+        .discount-percent {
+            background-color: var(--discount-badge);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+        
+        .discount-description {
+            color: var(--secondary-text);
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .discount-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--secondary-text);
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .discount-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .profile-card {
@@ -317,10 +367,27 @@
             color: var(--accent-color);
         }
         
+        .map-placeholder {
+            text-align: center;
+            color: var(--secondary-text);
+            padding: 20px;
+        }
+        
+        .map-placeholder i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+        
         @media (max-width: 480px) {
             .map-container {
                 height: 300px;
             }
+        }
+        
+        /* Стили для карты */
+        .leaflet-container {
+            background: var(--accent-light) !important;
         }
     </style>
 </head>
@@ -341,20 +408,105 @@
             </div>
         </div>
         
-        <div class="tab-navigation">
-            <div class="tab active" data-tab="map">Карта</div>
-            <div class="tab" data-tab="profile">Профиль</div>
-        </div>
-        
-        <div id="map" class="tab-content active">
+        <div id="map-tab" class="tab-content active">
             <div class="map-container">
-                <div id="yandex-map"></div>
+                <div class="map-placeholder" id="mapPlaceholder">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <p>Загрузка карты...</p>
+                </div>
+                <div id="map"></div>
             </div>
             
+            <div class="section-title">Партнерские заведения</div>
+            
             <div class="empty-state">
-                <i class="fas fa-map-marked-alt"></i>
-                <h3>Карта партнерских заведений</h3>
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Найдите заведения на карте</h3>
                 <p>На карте отмечены места, где можно воспользоваться преимуществами карты Дома молодежи</p>
+            </div>
+        </div>
+        
+        <div id="discounts" class="tab-content">
+            <div class="section-title">Доступные скидки</div>
+            
+            <div class="discount-card">
+                <div class="discount-header">
+                    <div>
+                        <div class="discount-title">Скидка в кафе "Молодежное"</div>
+                        <div class="discount-description">На весь ассортимент выпечки и напитков</div>
+                    </div>
+                    <div class="discount-percent">-15%</div>
+                </div>
+                <div class="discount-footer">
+                    <div class="discount-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>до 30.11.2023</span>
+                    </div>
+                    <div class="discount-usage">
+                        <i class="far fa-user"></i>
+                        <span>2/5 использовано</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="discount-card">
+                <div class="discount-header">
+                    <div>
+                        <div class="discount-title">Билеты в кинотеатр</div>
+                        <div class="discount-description">На все сеансы в кинотеатре "Юность"</div>
+                    </div>
+                    <div class="discount-percent">-20%</div>
+                </div>
+                <div class="discount-footer">
+                    <div class="discount-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>до 15.12.2023</span>
+                    </div>
+                    <div class="discount-usage">
+                        <i class="far fa-user"></i>
+                        <span>1/3 использовано</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="discount-card">
+                <div class="discount-header">
+                    <div>
+                        <div class="discount-title">Абонемент в бассейн</div>
+                        <div class="discount-description">На месячный абонемент без ограничений</div>
+                    </div>
+                    <div class="discount-percent">-25%</div>
+                </div>
+                <div class="discount-footer">
+                    <div class="discount-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>до 10.12.2023</span>
+                    </div>
+                    <div class="discount-usage">
+                        <i class="far fa-user"></i>
+                        <span>0/1 использовано</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="discount-card">
+                <div class="discount-header">
+                    <div>
+                        <div class="discount-title">Приведи друга</div>
+                        <div class="discount-description">Получи 2 дополнительных посещения спортзала</div>
+                    </div>
+                    <div class="discount-percent">+2</div>
+                </div>
+                <div class="discount-footer">
+                    <div class="discount-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>до 31.12.2023</span>
+                    </div>
+                    <div class="discount-usage">
+                        <i class="fas fa-users"></i>
+                        <span>Активно</span>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -366,6 +518,8 @@
                 
                 <button class="action-button">Показать QR-код</button>
             </div>
+            
+            <div class="section-title">Настройки</div>
             
             <div class="menu-item">
                 <div class="menu-icon">
@@ -390,9 +544,13 @@
     </div>
     
     <div class="footer">
-        <div class="footer-item active" data-tab="map">
+        <div class="footer-item active" data-tab="map-tab">
             <div class="footer-icon"><i class="fas fa-map"></i></div>
             <div class="footer-text">Карта</div>
+        </div>
+        <div class="footer-item" data-tab="discounts">
+            <div class="footer-icon"><i class="fas fa-percentage"></i></div>
+            <div class="footer-text">Скидки</div>
         </div>
         <div class="footer-item" data-tab="profile">
             <div class="footer-icon"><i class="fas fa-user"></i></div>
@@ -400,25 +558,21 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // Переключение между вкладками
-        document.querySelectorAll('.tab, .footer-item').forEach(element => {
+        document.querySelectorAll('.footer-item').forEach(element => {
             element.addEventListener('click', () => {
                 const tabId = element.getAttribute('data-tab');
                 
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Убираем активный класс у всех вкладок и контента
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.querySelectorAll('.footer-item').forEach(f => f.classList.remove('active'));
                 
+                // Добавляем активный класс текущей вкладке и соответствующему контенту
                 if (tabId) {
-                    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
                     document.getElementById(tabId).classList.add('active');
-                    
-                    document.querySelectorAll('.footer-item').forEach(item => {
-                        if (item.getAttribute('data-tab') === tabId) {
-                            item.classList.add('active');
-                        }
-                    });
+                    element.classList.add('active');
                 }
             });
         });
@@ -489,87 +643,108 @@
                 themeIcon.classList.add('fa-moon');
                 localStorage.setItem('theme', 'light');
             }
+            
+            // Обновляем стили карты при смене темы
+            updateMapTheme();
         });
         
-        // Инициализация Яндекс Карт
-        async function initYandexMap() {
-            // Ждем загрузки API
-            await ymaps3.ready;
-            
-            const {YMap, YMapDefaultSchemeLayer, YMapMarker} = ymaps3;
+        // Инициализация карты
+        let map;
+        function initMap() {
+            // Скрываем плейсхолдер
+            document.getElementById('mapPlaceholder').style.display = 'none';
             
             // Создаем карту
-            const map = new YMap(
-                document.getElementById('yandex-map'),
-                {
-                    location: {
-                        center: [37.617494, 55.755826], // Москва
-                        zoom: 10
-                    }
+            map = L.map('map').setView([55.7558, 37.6173], 13); // Москва по умолчанию
+            
+            // Добавляем слой карты в зависимости от темы
+            updateMapTheme();
+            
+            // Добавляем маркеры заведений
+            addSampleLocations();
+        }
+        
+        // Обновление темы карты
+        function updateMapTheme() {
+            if (!map) return;
+            
+            // Удаляем текущий слой
+            map.eachLayer(layer => {
+                if (layer instanceof L.TileLayer) {
+                    map.removeLayer(layer);
                 }
-            );
+            });
             
-            // Добавляем стандартный слой схемы
-            map.addChild(new YMapDefaultSchemeLayer());
-            
-            // Добавляем маркеры партнерских заведений (пример)
+            // Добавляем соответствующий теме слой
+            if (document.body.classList.contains('theme-dark')) {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+            } else {
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+            }
+        }
+        
+        // Добавление примеров заведений на карту
+        function addSampleLocations() {
+            // Примеры заведений (соответствуют скидкам)
             const locations = [
                 {
-                    coordinates: [37.617494, 55.755826],
-                    title: "Главный корпус Дома молодежи"
+                    name: "Кафе 'Молодежное'",
+                    lat: 55.7558,
+                    lng: 37.6173,
+                    discount: "Скидка 15%"
                 },
                 {
-                    coordinates: [37.639093, 55.768032],
-                    title: "Кафе для участников"
+                    name: "Кинотеатр 'Юность'",
+                    lat: 55.7517,
+                    lng: 37.6178,
+                    discount: "Скидка 20%"
                 },
                 {
-                    coordinates: [37.591206, 55.733369],
-                    title: "Спортивный комплекс"
+                    name: "Бассейн 'Волна'",
+                    lat: 55.7598,
+                    lng: 37.6193,
+                    discount: "Скидка 25%"
+                },
+                {
+                    name: "Спортзал 'Энергия'",
+                    lat: 55.7528,
+                    lng: 37.6223,
+                    discount: "2 бесплатных занятия"
                 }
             ];
             
-            // Создаем маркеры для каждого местоположения
+            // Создаем кастомную иконку для маркера
+            const customIcon = L.divIcon({
+                html: '<i class="fas fa-map-marker-alt" style="color: #8b5cf6; font-size: 24px;"></i>',
+                iconSize: [24, 24],
+                iconAnchor: [12, 24],
+                className: 'custom-marker'
+            });
+            
+            // Добавляем маркеры на карту
             locations.forEach(location => {
-                const markerElement = document.createElement('div');
-                markerElement.innerHTML = `
-                    <div style="
-                        background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
-                        width: 32px;
-                        height: 32px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: white;
-                        font-weight: bold;
-                        font-size: 14px;
-                        border: 2px solid white;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                    ">
-                        <i class="fas fa-map-marker-alt"></i>
+                const marker = L.marker([location.lat, location.lng], {icon: customIcon}).addTo(map);
+                marker.bindPopup(`
+                    <div style="padding: 10px;">
+                        <b>${location.name}</b><br>
+                        <span style="color: #8b5cf6; font-weight: bold;">${location.discount}</span>
                     </div>
-                `;
-                
-                const marker = new YMapMarker(
-                    {
-                        coordinates: location.coordinates,
-                        title: location.title
-                    },
-                    markerElement
-                );
-                
-                map.addChild(marker);
+                `);
             });
         }
         
-        // Инициализируем карту при загрузке страницы
+        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            // Инициализируем Яндекс Карты
-            initYandexMap().catch(console.error);
+            // Инициализируем карту
+            initMap();
             
             // Следим за изменением системной темы
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-                if (!localStorage.getItem('theme')) {
+                if (!localStorage.getItem('theme')) { // Только если пользователь не выбирал тему вручную
                     if (event.matches) {
                         document.body.classList.add('theme-dark');
                         themeIcon.classList.remove('fa-moon');
@@ -579,6 +754,7 @@
                         themeIcon.classList.remove('fa-sun');
                         themeIcon.classList.add('fa-moon');
                     }
+                    updateMapTheme();
                 }
             });
         });
