@@ -27,7 +27,7 @@
             --card-bg: #ffffff;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             --hover-color: #f5f3ff;
-            --header-height: 120px;
+            --header-height: 80px;
             --safe-area-top: env(safe-area-inset-top, 0px);
             --safe-area-bottom: env(safe-area-inset-bottom, 0px);
         }
@@ -62,6 +62,81 @@
             flex-direction: column;
         }
         
+        /* Загрузочный экран */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .splash-logo {
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        .splash-logo i {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .splash-text {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .splash-username {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+        
+        .loading-spinner {
+            animation: spin 1.5s linear infinite;
+        }
+        
+        .loading-spinner i {
+            width: 40px;
+            height: 40px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Основной контент */
         .header {
             background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
             color: white;
@@ -153,28 +228,11 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
-        .header-welcome {
-            padding: 0 16px;
-            margin-top: 10px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .welcome-text {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .user-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-top: 4px;
-        }
-        
         .container {
             flex: 1;
             overflow-y: auto;
             padding-bottom: 20px;
+            scroll-behavior: smooth;
         }
         
         .tab-content {
@@ -183,8 +241,8 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .tab-content.active {
@@ -203,6 +261,18 @@
             overflow: hidden;
             transition: all 0.3s;
             border: 1px solid var(--border-color);
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .feed-item:hover {
@@ -271,6 +341,7 @@
             box-shadow: var(--shadow);
             text-align: center;
             border: 1px solid var(--border-color);
+            animation: slideUp 0.5s ease;
         }
         
         .profile-avatar {
@@ -368,6 +439,14 @@
             background-color: #f0f0f0;
         }
         
+        .qr-description {
+            color: var(--secondary-text);
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
         .footer {
             position: fixed;
             bottom: 0;
@@ -454,11 +533,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        .tg-theme-aware {
-            /* Стили, которые будут адаптироваться под тему Telegram */
-            transition: background-color 0.3s, color 0.3s;
-        }
-        
         @media (max-width: 480px) {
             .map-container {
                 height: 180px;
@@ -474,28 +548,33 @@
             }
             
             .header {
-                height: 110px;
+                height: 70px;
             }
-        }
-        
-        /* Анимация появления для контента */
-        .content-appear {
-            animation: contentAppear 0.5s ease-out;
-        }
-        
-        @keyframes contentAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+            
+            .splash-text {
+                font-size: 20px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            
+            .splash-username {
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Загрузочный экран -->
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <i data-feather="home"></i>
+        </div>
+        <div class="splash-text">Добро пожаловать</div>
+        <div class="splash-username" id="splash-username">@username</div>
+        <div class="loading-spinner">
+            <i data-feather="loader"></i>
+        </div>
+    </div>
+    
+    <!-- Основной контент -->
     <div class="header">
         <div class="header-content">
             <div class="logo">
@@ -509,17 +588,13 @@
                 <div class="user-avatar" id="userAvatar"></div>
             </div>
         </div>
-        <div class="header-welcome">
-            <div class="welcome-text">Добро пожаловать</div>
-            <div class="user-name" id="userName"></div>
-        </div>
     </div>
     
     <div class="container">
-        <div id="feed" class="tab-content active content-appear">
+        <div id="feed" class="tab-content active">
             <div class="feed">
                 <!-- Карта как элемент ленты -->
-                <div class="feed-item">
+                <div class="feed-item" id="map-feed-item">
                     <div class="map-container">
                         <div id="yandex-map"></div>
                     </div>
@@ -544,8 +619,8 @@
                 <!-- Дополнительные элементы ленты -->
                 <div class="feed-item" data-location="cafe">
                     <div class="feed-content">
-                        <h3 class="feed-title">Кофейня "Уют"</h3>
-                        <p class="feed-description">Скидка 10% на все напитки при предъявлении QR-кода.</p>
+                        <h3 class="feed-title">Крым Шаверма</h3>
+                        <p class="feed-description">Скидка 10% на всё при предъявлении карты.</p>
                         <button class="map-button" data-location="cafe">
                             <i data-feather="map-pin"></i>
                             На карте
@@ -555,7 +630,7 @@
                 
                 <div class="feed-item" data-location="bookstore">
                     <div class="feed-content">
-                        <h3 class="feed-title">Книжный магазин "Читай-город"</h3>
+                        <h3 class="feed-title">Книжный магазин "АзъБука"</h3>
                         <p class="feed-description">Скидка 20% на художественную литературу по пятницам.</p>
                         <button class="map-button" data-location="bookstore">
                             <i data-feather="map-pin"></i>
@@ -566,34 +641,18 @@
             </div>
         </div>
         
-        <div id="profile" class="tab-content content-appear">
+        <div id="profile" class="tab-content">
             <div class="profile-card">
                 <div class="profile-avatar" id="profileAvatar"></div>
                 <div class="profile-name" id="profileName"></div>
-                <div class="profile-status" id="profileStatus">Активный участник</div>
+                <div class="profile-status" id="profileStatus">Участник совета молодежи</div>
                 
                 <div class="qr-code">
                     <div class="qr-code-placeholder"></div>
                 </div>
-                <p style="color: var(--secondary-text); font-size: 14px; margin-top: 10px;">
-                    Покажите этот QR-код для получения скидок у партнеров
+                <p class="qr-description">
+                    Покажите этот QR-код для показа анкеты участника совета молодежи
                 </p>
-            </div>
-            
-            <div class="profile-card">
-                <h3 style="margin-bottom: 16px; text-align: left;">Статистика</h3>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span>Посещено мест:</span>
-                    <span style="font-weight: 600;">12</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span>Получено скидок:</span>
-                    <span style="font-weight: 600;">8</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Активных акций:</span>
-                    <span style="font-weight: 600;">5</span>
-                </div>
             </div>
         </div>
     </div>
@@ -616,7 +675,8 @@
             userData: {
                 firstName: "Вася",
                 lastName: "Пупкин",
-                status: "Активный участник"
+                username: "@vasya_the_best",
+                status: "Участник совета молодежи"
             },
             
             // Состояние приложения
@@ -625,7 +685,8 @@
                 theme: 'light',
                 map: null,
                 placemarks: {},
-                tg: null
+                tg: null,
+                splashVisible: true
             },
             
             // Инициализация приложения
@@ -637,6 +698,11 @@
                 this.initTheme();
                 this.initEventListeners();
                 this.initMap();
+                
+                // Скрываем загрузочный экран после инициализации
+                setTimeout(() => {
+                    this.hideSplashScreen();
+                }, 2000);
             },
             
             // Инициализация Telegram Web App
@@ -652,6 +718,7 @@
                         const tgUser = this.state.tg.initDataUnsafe.user;
                         this.userData.firstName = tgUser.first_name || "Пользователь";
                         this.userData.lastName = tgUser.last_name || "";
+                        this.userData.username = tgUser.username ? `@${tgUser.username}` : "@username";
                     }
                     
                     // Устанавливаем тему в соответствии с настройками Telegram
@@ -674,8 +741,8 @@
                 document.getElementById('userAvatar').textContent = initials;
                 document.getElementById('profileAvatar').textContent = initials;
                 document.getElementById('profileName').textContent = fullName;
-                document.getElementById('userName').textContent = fullName;
                 document.getElementById('profileStatus').textContent = this.userData.status;
+                document.getElementById('splash-username').textContent = this.userData.username;
             },
             
             // Получение инициалов из имени
@@ -685,6 +752,17 @@
                 
                 if (!lastName) return firstInitial;
                 return firstInitial + lastName.charAt(0).toUpperCase();
+            },
+            
+            // Скрытие загрузочного экрана
+            hideSplashScreen() {
+                const splashScreen = document.getElementById('splash-screen');
+                splashScreen.classList.add('hidden');
+                
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    this.state.splashVisible = false;
+                }, 500);
             },
             
             // Инициализация вкладок
@@ -710,12 +788,6 @@
                     document.getElementById(tabId).classList.add('active');
                     document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
                     this.state.currentTab = tabId;
-                    
-                    // Добавляем анимацию появления контента
-                    document.getElementById(tabId).classList.add('content-appear');
-                    setTimeout(() => {
-                        document.getElementById(tabId).classList.remove('content-appear');
-                    }, 500);
                 }
                 
                 // Обновляем иконки после смены вкладки
@@ -820,14 +892,14 @@
                     },
                     {
                         id: 'cafe',
-                        coords: [60.709215, 28.751893],
-                        name: "Кофейня 'Уют'",
-                        description: "Скидка 10% на все напитки при предъявлении QR-кода."
+                        coords: [60.709456, 28.750274],
+                        name: "Крым Шаверма",
+                        description: "Скидка 10% на всё при предъявлении карты."
                     },
                     {
                         id: 'bookstore',
-                        coords: [60.713842, 28.746521],
-                        name: "Книжный магазин 'Читай-город'",
+                        coords: [60.710767, 28.757031],
+                        name: "Книжный магазин 'АзъБука'",
                         description: "Скидка 20% на художественную литературу по пятницам."
                     }
                 ];
@@ -880,11 +952,22 @@
                     
                     // Небольшая задержка для переключения вкладки перед прокруткой
                     setTimeout(() => {
-                        document.querySelector('.feed').scrollIntoView({ 
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
+                        this.scrollToMap();
                     }, 300);
+                } else {
+                    // Мы уже на вкладке ленты, просто прокручиваем к карте
+                    this.scrollToMap();
+                }
+            },
+            
+            // Прокрутка к карте
+            scrollToMap() {
+                const mapFeedItem = document.getElementById('map-feed-item');
+                if (mapFeedItem) {
+                    mapFeedItem.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start'
+                    });
                 }
             },
             
