@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дом молодежи</title>
     <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=8c6093db-f9ac-4842-9028-e93c4bae3e85&lang=ru_RU" type="text/javascript"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
     <style>
         * {
             margin: 0;
@@ -140,19 +140,26 @@
             display: block;
         }
         
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin: 24px 16px 16px;
-            color: var(--text-color);
+        .feed {
+            padding-bottom: 20px;
+        }
+        
+        .feed-item {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .feed-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .map-container {
-            height: 400px;
-            margin: 0 16px 20px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
+            height: 250px;
             background-color: var(--accent-light);
         }
         
@@ -161,33 +168,21 @@
             width: 100%;
         }
         
-        .discount-card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
+        .feed-content {
             padding: 20px;
-            margin: 0 16px 16px;
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--accent-color);
-            transition: all 0.3s;
         }
         
-        .discount-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .discount-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .discount-title {
+        .feed-title {
+            font-size: 18px;
             font-weight: 700;
-            font-size: 17px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: var(--text-color);
+        }
+        
+        .feed-description {
+            color: var(--secondary-text);
+            font-size: 15px;
+            margin-bottom: 16px;
         }
         
         .discount-percent {
@@ -198,32 +193,30 @@
             font-weight: 700;
             font-size: 14px;
             white-space: nowrap;
-            margin-left: 10px;
         }
         
-        .discount-description {
-            color: var(--secondary-text);
-            font-size: 15px;
-            margin-bottom: 12px;
-        }
-        
-        .discount-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .map-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
             font-size: 14px;
-            color: var(--secondary-text);
-            padding-top: 12px;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .discount-date {
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 6px;
+            width: 100%;
+            justify-content: center;
         }
         
-        .discount-date svg {
+        .map-button:hover {
+            background-color: var(--accent-dark);
+        }
+        
+        .map-button svg {
             width: 16px;
             height: 16px;
         }
@@ -265,70 +258,71 @@
             border-radius: 20px;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
-        .action-button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        .action-button:hover {
-            background-color: var(--accent-dark);
-        }
-        
-        .menu-item {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 18px 20px;
-            margin: 0 16px 12px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .menu-item:hover {
-            background-color: var(--hover-color);
-        }
-        
-        .menu-icon {
-            width: 44px;
-            height: 44px;
+        .qr-code {
+            background-color: white;
             border-radius: 12px;
-            background-color: var(--accent-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-color);
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 200px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
-        .menu-icon svg {
+        .qr-code-placeholder {
+            width: 160px;
+            height: 160px;
+            background: 
+                linear-gradient(90deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(180deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(270deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(360deg, #f0f0f0 25%, transparent 25%);
+            background-size: 10px 10px;
+            background-position: 0 0, 0 0, 0 0, 0 0;
+            margin: 0 auto;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .qr-code-placeholder::before,
+        .qr-code-placeholder::after {
+            content: '';
+            position: absolute;
+            background-color: #2d2d2d;
+            border-radius: 4px;
+        }
+        
+        .qr-code-placeholder::before {
+            width: 40px;
+            height: 40px;
+            top: 10px;
+            left: 10px;
+        }
+        
+        .qr-code-placeholder::after {
             width: 20px;
             height: 20px;
+            bottom: 10px;
+            right: 10px;
         }
         
-        .menu-text {
-            flex: 1;
-            font-weight: 600;
-            font-size: 16px;
+        .theme-dark .qr-code {
+            background-color: #2d2d2d;
         }
         
-        .menu-arrow svg {
-            width: 16px;
-            height: 16px;
-            color: var(--secondary-text);
+        .theme-dark .qr-code-placeholder {
+            background: 
+                linear-gradient(90deg, #444 25%, transparent 25%),
+                linear-gradient(180deg, #444 25%, transparent 25%),
+                linear-gradient(270deg, #444 25%, transparent 25%),
+                linear-gradient(360deg, #444 25%, transparent 25%);
+            background-size: 10px 10px;
+        }
+        
+        .theme-dark .qr-code-placeholder::before,
+        .theme-dark .qr-code-placeholder::after {
+            background-color: #f0f0f0;
         }
         
         .footer {
@@ -417,7 +411,7 @@
         
         @media (max-width: 480px) {
             .map-container {
-                height: 300px;
+                height: 200px;
             }
         }
     </style>
@@ -439,27 +433,77 @@
             </div>
         </div>
         
-        <div id="map-tab" class="tab-content active">
-            <div class="map-container">
-                <div id="yandex-map"></div>
-            </div>
-            
-            <div class="section-title">Партнерские заведения</div>
-            
-            <div class="empty-state">
-                <i data-feather="map-pin"></i>
-                <h3>Найдите заведения на карте</h3>
-                <p>На карте отмечены места, где можно воспользоваться преимуществами карты Дома молодежи</p>
-            </div>
-        </div>
-        
-        <div id="discounts" class="tab-content">
-            <div class="section-title">Доступные скидки</div>
-            
-            <div class="empty-state">
-                <i data-feather="tag"></i>
-                <h3>Скидки скоро появятся</h3>
-                <p>Мы активно работаем над специальными предложениями для вас</p>
+        <div id="feed" class="tab-content active">
+            <div class="feed">
+                <!-- Карта как элемент ленты -->
+                <div class="feed-item">
+                    <div class="map-container">
+                        <div id="yandex-map"></div>
+                    </div>
+                    <div class="feed-content">
+                        <h3 class="feed-title">Партнерские заведения</h3>
+                    </div>
+                </div>
+                
+                <!-- Элемент скидки 1 -->
+                <div class="feed-item" data-location="cafe">
+                    <div class="feed-content">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <h3 class="feed-title">Скидка в кафе "Молодежное"</h3>
+                            <div class="discount-percent">-15%</div>
+                        </div>
+                        <p class="feed-description">На весь ассортимент выпечки и напитков. Действует для держателей карты Дома молодежи.</p>
+                        <button class="map-button" data-location="cafe">
+                            <i data-feather="map-pin"></i>
+                            На карте
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Элемент скидки 2 -->
+                <div class="feed-item" data-location="cinema">
+                    <div class="feed-content">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <h3 class="feed-title">Билеты в кинотеатр "Юность"</h3>
+                            <div class="discount-percent">-20%</div>
+                        </div>
+                        <p class="feed-description">На все сеансы в кинотеатре "Юность". Предъявите карту Дома молодежи при покупке билета.</p>
+                        <button class="map-button" data-location="cinema">
+                            <i data-feather="map-pin"></i>
+                            На карте
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Элемент скидки 3 -->
+                <div class="feed-item" data-location="pool">
+                    <div class="feed-content">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <h3 class="feed-title">Абонемент в бассейн</h3>
+                            <div class="discount-percent">-25%</div>
+                        </div>
+                        <p class="feed-description">На месячный абонемент без ограничений. Только для активных участников Дома молодежи.</p>
+                        <button class="map-button" data-location="pool">
+                            <i data-feather="map-pin"></i>
+                            На карте
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Элемент скидки 4 -->
+                <div class="feed-item" data-location="gym">
+                    <div class="feed-content">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <h3 class="feed-title">Приведи друга</h3>
+                            <div class="discount-percent">+2</div>
+                        </div>
+                        <p class="feed-description">Получи 2 дополнительных посещения спортзала за каждого приведенного друга.</p>
+                        <button class="map-button" data-location="gym">
+                            <i data-feather="map-pin"></i>
+                            На карте
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -469,41 +513,18 @@
                 <div class="profile-name">Иван Иванов</div>
                 <div class="profile-status">Активный участник</div>
                 
-                <button class="action-button">Показать QR-код</button>
-            </div>
-            
-            <div class="section-title">Настройки</div>
-            
-            <div class="menu-item">
-                <div class="menu-icon">
-                    <i data-feather="edit-2"></i>
-                </div>
-                <div class="menu-text">Редактировать профиль</div>
-                <div class="menu-arrow">
-                    <i data-feather="chevron-right"></i>
-                </div>
-            </div>
-            
-            <div class="menu-item">
-                <div class="menu-icon">
-                    <i data-feather="code"></i>
-                </div>
-                <div class="menu-text">Мой QR-код</div>
-                <div class="menu-arrow">
-                    <i data-feather="chevron-right"></i>
+                <div class="qr-code">
+                    <div class="qr-code-placeholder"></div>
+                    <p style="margin-top: 16px; font-size: 14px; color: var(--secondary-text);">QR-код для получения скидок</p>
                 </div>
             </div>
         </div>
     </div>
     
     <div class="footer">
-        <div class="footer-item active" data-tab="map-tab">
-            <i data-feather="map"></i>
-            <div class="footer-text">Карта</div>
-        </div>
-        <div class="footer-item" data-tab="discounts">
-            <i data-feather="percent"></i>
-            <div class="footer-text">Скидки</div>
+        <div class="footer-item active" data-tab="feed">
+            <i data-feather="grid"></i>
+            <div class="footer-text">Лента</div>
         </div>
         <div class="footer-item" data-tab="profile">
             <i data-feather="user"></i>
@@ -514,6 +535,10 @@
     <script>
         // Инициализация Feather Icons
         feather.replace();
+        
+        // Глобальные переменные для карты и меток
+        let myMap;
+        const placemarks = {};
         
         // Переключение между вкладками
         document.querySelectorAll('.footer-item').forEach(element => {
@@ -554,21 +579,6 @@
         document.getElementById('userAvatar').textContent = userInitials;
         document.getElementById('profileAvatar').textContent = userInitials;
         document.querySelector('.profile-name').textContent = userName;
-        
-        // Добавление интерактивности кнопкам
-        document.querySelectorAll('.action-button').forEach(button => {
-            button.addEventListener('click', function() {
-                alert('QR-код будет отображен здесь');
-            });
-        });
-        
-        // Добавление интерактивности пунктам меню
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const text = this.querySelector('.menu-text').textContent;
-                alert(`Функция "${text}" в разработке`);
-            });
-        });
         
         // Автоматическое определение темы устройства
         function detectSystemTheme() {
@@ -618,7 +628,7 @@
             // Инициализируем карту
             ymaps.ready(function () {
                 try {
-                    const myMap = new ymaps.Map("yandex-map", {
+                    myMap = new ymaps.Map("yandex-map", {
                         center: [55.76, 37.64], // Москва
                         zoom: 10,
                         controls: ['zoomControl', 'typeSelector', 'fullscreenControl']
@@ -627,19 +637,28 @@
                     // Добавляем метки заведений
                     const locations = [
                         {
-                            coords: [55.76, 37.64],
-                            name: "Главный корпус Дома молодежи",
-                            description: "Основное здание"
-                        },
-                        {
+                            id: 'cafe',
                             coords: [55.74, 37.60],
-                            name: "Кафе для участников",
+                            name: "Кафе 'Молодежное'",
                             description: "Скидка 15% для держателей карты"
                         },
                         {
+                            id: 'cinema',
+                            coords: [55.75, 37.62],
+                            name: "Кинотеатр 'Юность'",
+                            description: "Скидка 20% на все сеансы"
+                        },
+                        {
+                            id: 'pool',
                             coords: [55.78, 37.65],
-                            name: "Спортивный комплекс",
-                            description: "Скидка 20% на абонементы"
+                            name: "Бассейн 'Волна'",
+                            description: "Скидка 25% на абонементы"
+                        },
+                        {
+                            id: 'gym',
+                            coords: [55.77, 37.63],
+                            name: "Спортзал 'Энергия'",
+                            description: "2 бесплатных занятия за друга"
                         }
                     ];
                     
@@ -661,6 +680,7 @@
                         );
                         
                         myMap.geoObjects.add(placemark);
+                        placemarks[location.id] = placemark;
                     });
                     
                     // Оптимизируем отображение меток
@@ -681,6 +701,29 @@
                 }
             });
         }
+        
+        // Функция для показа метки на карте
+        function showOnMap(locationId) {
+            if (!myMap || !placemarks[locationId]) return;
+            
+            const placemark = placemarks[locationId];
+            myMap.setCenter(placemark.geometry.getCoordinates(), 16);
+            placemark.balloon.open();
+        }
+        
+        // Обработчики для кнопок "На карте"
+        document.querySelectorAll('.map-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const locationId = this.getAttribute('data-location');
+                showOnMap(locationId);
+                
+                // Прокручиваем к карте
+                document.querySelector('.feed').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
         
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
